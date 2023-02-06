@@ -7,6 +7,7 @@ describe('login spec', () => {
 	"password": "input[name=password]",
 	"passwordError": "#mat-error-1",
 	"button": "button[type=submit]",
+	"error":".login__form__errors"
     }
     
     before(() => {
@@ -29,6 +30,16 @@ describe('login spec', () => {
 	    cy.get(loginSelectors.button).click()
 	    cy.location('pathname').should('eq', '/quizzes')
 	})
+    })
+
+    it("shows error if user does not exist", () => {
+	cy.visit('/')
+	cy.get(loginSelectors.email).type("nonexistant@user.me")
+	cy.get(loginSelectors.password).type("Somep@ssword1")
+	cy.get(loginSelectors.button).click()
+	cy.location('pathname').should('eq', '/login')
+	cy.contains(loginSelectors.error, "Firebase: There is no user record corresponding to this identifier. The user may have been deleted. (auth/user-not-found).");
+	
     })
 
     it("shows error if email has invalid form", () => {
