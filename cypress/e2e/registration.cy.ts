@@ -1,3 +1,5 @@
+import users from "../fixtures/users.json"
+
 describe('registration spec', () => {
     const registrationSelectors = {
 	"email": "input[type=email]",
@@ -6,7 +8,8 @@ describe('registration spec', () => {
 	"passwordError": "#mat-error-1",
 	"repeatPassword": "input[name=repeatPassword]",
 	"repeatPasswordError": "#mat-error-2",
-	"button": "button[type=submit]"
+	"button": "button[type=submit]",
+	"error": ".register__form__errors"
     }
     
     before(() => {
@@ -22,6 +25,16 @@ describe('registration spec', () => {
 	cy.get(registrationSelectors.button).click()
     })
 
+    users.forEach((user) => {
+	it(`tries to register with existing ${user.type} information`, () => {
+	    cy.visit('/register')
+	    cy.get(registrationSelectors.email).type(user.email)
+	    cy.get(registrationSelectors.password).type(user.password)
+	    cy.get(registrationSelectors.repeatPassword).type(user.password)
+	    cy.get(registrationSelectors.button).click()
+	    cy.contains(registrationSelectors.error, "Firebase: The email address is already in use by another account. (auth/email-already-in-use).")
+	})
+    })
     it('shows error if email is in wrong format', () => {
 	cy.visit('/register')
 	cy.get(registrationSelectors.email).type("Test")

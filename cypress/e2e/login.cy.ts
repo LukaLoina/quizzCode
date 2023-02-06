@@ -42,6 +42,17 @@ describe('login spec', () => {
 	
     })
 
+    users.forEach((user) => {
+	it(`shows error if ${user.type} tries to log in with wrong password`, () => {
+	    cy.visit('/')
+	    cy.get(loginSelectors.email).type(user.email)
+	    cy.get(loginSelectors.password).type(user.password+"something")
+	    cy.get(loginSelectors.button).click()
+	    cy.location('pathname').should('eq', '/login')
+	    cy.contains(loginSelectors.error, "Firebase: The password is invalid or the user does not have a password. (auth/wrong-password).");
+	})
+    })
+
     it("shows error if email has invalid form", () => {
 	cy.visit('/')
 	cy.get(loginSelectors.password).type("gvGmR6s6PYc7h7nAfdiEOEOfPXO0@")
